@@ -81,7 +81,7 @@ Hence, the FT takes a signal (representing a function in the time domain) and tr
 If you know a bit about music think of the FT as transforming the sound of a chord into its constituent pitches of different intensities. 
 Not only can you go from the time domain to frequency domain, you can also go the other way around since the transformation is invertible (i.e. inverse FT)! 
 
-![fourier-transform-gif.gif](images%2Fblog%2Ffourier-transform-gif.gif)
+![fourier-transform.gif](images%2Fblog%2Ffourier-transform-gif.gif)
 
 Wikipedia provides this handy gif for a visual intuition on what the fourier transform does. 
 The red signal is the original function in the time domain. Applying the FT you breakdown the red signal into multiple
