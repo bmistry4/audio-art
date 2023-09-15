@@ -18,12 +18,12 @@ Turning a spoken memory into art.
 
 - **Why?** (Motivation/Background story.) A few months ago, someone close to me had gone on a holiday to Wales, 
 specifically, to climb Mount Snowdon. (Snowdon is the highest mountain in Wales, with a height of 1,085m!) On a good day 
-this is a mighty LONG trek (~5-7 hrs), so as you can imagine, on a day when there's a storm this is an amazing feat. 
+this is a mighty LONG trek (~5-7 hrs), so as you can imagine, on a stormy day this is a might LONG and HARD trek. 
 With it being the typical British weather, of course there was a storm, and with this person's luck, of course it 
 was a big one (Storm Antoni to be specific)! Long story short nothing of theirs went to plan. This included the weather, 
 the time of the hike, finding the spare torch batteries, finding the train to back down the mountain, or remembering their 
 toothbrush during their stay! But even with all those setbacks and awful conditions, they still managed to do the hike! 
-After completing the hike (and regaining the feeling in their fingers), I was sent an audio message (approx. 16 mins long) 
+After completing the hike (and regaining the feeling in their fingers), I was sent an audio message (~15-16 mins long) 
 explaining their journey from start to end. Listening to their monologue, I thought "Wow, what a journey and heck of an 
 experience!". I wanted to make something personal for them as a reminder of their little adventure, and since art is 
 fun and expressive I thought why not!
@@ -58,27 +58,50 @@ This is a simple way to visualise the audio and is plotted on a 2D axis.
 The plot visualises how the amplitude of the audio signal changes over time. 
 - x-axis (time): The audio clip will run for a certain amount of seconds 
 - y-axis (amplitude): Refers to the sound intensity
-  - We use the `scipy.io.wavfile` (https://docs.scipy.org/doc/scipy/reference/generated/scipy.io.wavfile.read.html) module to read the audio file. 
+  - We use the `scipy.io.wavfile` [(click for docs)](https://docs.scipy.org/doc/scipy/reference/generated/scipy.io.wavfile.read.html) module to read the audio file. 
   - The returned data is given in a numpy array and the data type is dependent on the audio files bit-depth (the number of bits in each sample). 
-  - For this case, I was dealing with a 32-bit integer PCM (show code?)
-    - PCM stands for  TODO
-    - The data is not in decibels (a common unit of sound pressure level) but can be converted from 32-bit audio data to decibels (but this is out of the scope of this article).
+  - For this case, I was dealing with a 32-bit integer PCM
+    - PCM stands for pulse-code modulation and is an uncompressed and lossless digital audio format.
+    - The data is not in decibels (a common unit of sound pressure level) but can be converted from 32-bit audio data to decibels.
 
 Q) What does it mean to have a negative amplitude?
 
-Example time domain plot with my audio clip:
+### Example plot
+Doing a time domain plot for my audio would look like the plot below, where each minute's worth of data is coloured differently. 
+
+![time_domain_full.png](images%2Ftime_domain_full.png)
+
+Now, one question you might be asking is why does the plot not look very much like a sound wave. 
+The answer is simply that there is a lot of data points plotted every second. 
+Every second, there are 48,000 data points to plot and this is called the sample frequency. 
+For the entire clip there's 45,025,816 data points (with the full clip being ~983 seconds long). 
+That's a lot of points to plot! 
+
+To convince you, let me zoom into the plot and consider only the first 10 seconds worth of data...
+
+![time_domain_10s.png](images%2Ftime_domain_10s.png)
+
+Looks more like a classic sound wave right?!
+And since at the end of the day, the audio signal is just a wave, if we really zoom in and only consider the first 0.001 
+seconds of data then we can even see a wave...
+
+![time_domain_1e-3s.png](images%2Ftime_domain_1e-3s.png)
+
+That's about it for the time domain. Now, let's talk about the frequency domain.
 
 ## Frequency domain: Frequency vs Amplitude - The Fourier Transform
 _Excellent blog: https://realpython.com/python-scipy-fft/_
 
 
-
 ### What is the Fourier Transform (FT)?
 The FT is pretty neat. It can take a signal and tells you the simple (sin/cos) waves that make it up.
 The resulting simple waves can be expressed solely by their frequency and amplitude values.
+
 You can plot these to visualise how the amplitudes of the signal changes over the different frequencies. 
 Hence, the FT takes a signal (representing a function in the time domain) and transforms it into the frequency domain. 
+
 If you know a bit about music think of the FT as transforming the sound of a chord into its constituent pitches of different intensities. 
+
 Not only can you go from the time domain to frequency domain, you can also go the other way around since the transformation is invertible (i.e. inverse FT)! 
 
 ![fourier-transform.gif](images%2Fblog%2Ffourier-transform.gif)
