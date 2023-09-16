@@ -6,7 +6,7 @@ from scipy.fft import fft
 from scipy.io.wavfile import read
 
 from utils.plot_utils import get_color_gradient, plot_patches
-from utils.preprocess_audio import sparsify_audio, convert_to_bins, complex2polar, normalize_complex_coords
+from utils.preprocess_audio import sparsify_audio, truncate_and_convert_to_bins, complex2polar, normalize_complex_coords
 
 AUDIO_FILEPATH = sys.argv[1]
 SAVE = False
@@ -37,7 +37,7 @@ bin_colours = [["#ff0000", "#ff000f", ],
 
 # read audio
 _, audio = read(AUDIO_FILEPATH)  # sample_freq = no. of samples per second (Hz), len(audio) = no. data points
-audio = convert_to_bins(audio, NUM_BINS)
+audio = truncate_and_convert_to_bins(audio, NUM_BINS)
 audio = sparsify_audio(audio, N_PER_BIN)
 
 # fourier transformation
