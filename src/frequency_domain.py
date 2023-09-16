@@ -5,31 +5,35 @@ import numpy as np
 from scipy.io.wavfile import read
 from scipy.fft import fft, fftfreq
 
+SAVE = False
 AUDIO_FILEPATH = sys.argv[1]
 
-DURATION = 100 # sec
-SAMPLE_RATE = 48000     # Hz
-N = SAMPLE_RATE * DURATION
+sample_freq, audio = read(AUDIO_FILEPATH)
+n = len(audio)
 
-# read audio
-sample_freq, audio = read(AUDIO_FILEPATH)  # sample_freq = no. of samples per second (Hz), len(audio) = no. data points
-audio = audio[:N]
+duration = -1  # set amount of data (in seconds) to plot. -1 mean use all data
+if duration != -1:
+    n = int(sample_freq * duration)
+    audio = audio[:n]
 
-normalized_audio = audio / max(audio)
+# apply fast fourier transformation
+yf = fft(audio)
+# since the fourier trans. returns complex numbers, calculate the magnitude
+yf_mag = np.abs(yf)
+# the max freq will be Nyquist frequency i.e. sample_freq/2
+xf = fftfreq(n, 1 / sample_freq)
 
+plt.title(f"Frequency Domain")
+plt.ylabel(f"FFT Amplitude")
+plt.xlabel("Frequency (Hz)")
 
-# fq vs time domain plot
-# plt.plot(range(len(audio)), normalized_audio)
+# because of the conjugate similarity, you can also just plot the positive domain for the x-axis
+# plt.xlim(0, int(sample_freq/2))
 
-# fourier transformation
-yf = fft(normalized_audio)
-xf = fftfreq(N, 1 / SAMPLE_RATE)
-# amp vs fq plot
-plt.plot(xf, np.abs(yf))
+plt.plot(xf, yf_mag)
+plt.grid()
 
-
-# plt.axis('off')
-# plt.tight_layout()  # fill space
+if SAVE:
+    plt.savefig('../images/frequency_domain_full.png')
 plt.show()
-
 print("completed")

@@ -66,7 +66,7 @@ The plot visualises how the amplitude of the audio signal changes over time.
 
 Q) What does it mean to have a negative amplitude?
 
-### Example plot
+### Example plots
 Doing a time domain plot for my audio would look like the plot below, where each minute's worth of data is coloured differently. 
 
 ![time_domain_full.png](images%2Ftime_domain_full.png)
@@ -90,8 +90,10 @@ seconds of data then we can even see a wave...
 That's about it for the time domain. Now, let's talk about the frequency domain.
 
 ## Frequency domain: Frequency vs Amplitude - The Fourier Transform
-_Excellent blog: https://realpython.com/python-scipy-fft/_
-
+### Handy (additional) resources 
+- Excellent blog: https://realpython.com/python-scipy-fft/
+- Video for visual learners (3Blue1Brown): https://www.youtube.com/watch?v=spUNpyF58BY&t=835s
+- Short video explanation (with maths): https://www.youtube.com/watch?v=8V6Hi-kP9EE&t=207s
 
 ### What is the Fourier Transform (FT)?
 The FT is pretty neat. It can take a signal and tells you the simple (sin/cos) waves that make it up.
@@ -100,17 +102,22 @@ The resulting simple waves can be expressed solely by their frequency and amplit
 You can plot these to visualise how the amplitudes of the signal changes over the different frequencies. 
 Hence, the FT takes a signal (representing a function in the time domain) and transforms it into the frequency domain. 
 
-If you know a bit about music think of the FT as transforming the sound of a chord into its constituent pitches of different intensities. 
+<p align="center">
+  <img src="images/blog/fourier-transform.gif" />
+</p>
 
-Not only can you go from the time domain to frequency domain, you can also go the other way around since the transformation is invertible (i.e. inverse FT)! 
+[//]: # (![fourier-transform.gif]&#40;images%2Fblog%2Ffourier-transform.gif&#41;)
+(source: https://en.wikipedia.org/wiki/Frequency_domain)
 
-![fourier-transform.gif](images%2Fblog%2Ffourier-transform.gif)
+[//]: # (https://en.wikipedia.org/wiki/File:Fourier_transform_time_and_frequency_domains_&#40;small&#41;.gif)
 
 Wikipedia provides this handy gif for a visual intuition on what the fourier transform does. 
 The red signal is the original function in the time domain. Applying the FT you breakdown the red signal into multiple
 blue waves of different frequencies. Taking the amplitude of each blue wave and plotting it in the frequency domain you're done! 
-https://en.wikipedia.org/wiki/File:Fourier_transform_time_and_frequency_domains_(small).gif
-(https://en.wikipedia.org/wiki/Frequency_domain) 
+
+If you know a bit about music think of the FT as transforming the sound of a chord into its constituent pitches of different intensities. 
+
+Not only can you go from the time domain to frequency domain, you can also go the other way around since the transformation is invertible (i.e. inverse FT)! 
 
 ### How does it work? 
 There are two types of FT, the continuous FT (CFT) and the discrete FT (DFT). The
@@ -118,10 +125,26 @@ There are two types of FT, the continuous FT (CFT) and the discrete FT (DFT). Th
 ### What's the FAST Fourier Transform (fft)
 The FFT is an algorithm to calculate the DFT. As the name implies, it's fast to compute. 
 
-Example of using the fourier transform for a frequency domain plot with my audio clip:
-
-
 ### Why is it useful?
+
+### Example plots
+You can use scipy to calculate the DFT using the FFT:
+
+![frequency_domain_full.png](images%2Ffrequency_domain_full.png)
+
+Applying the FFT will return an array of complex values representing the amplitude and phase of a sinusoidal component at a corresponding frequency.
+Notice the symmetry about the Y-axis (amplitude axis). 
+This **conjugate symmetry** in the frequency domain, is a result of the FFT being applied to a real-valued signal. 
+An explanation is shown [here](https://dsp.stackexchange.com/a/4827).
+Due to this property, you can just plot the positive X-axis domain like below:
+
+![frequency_domain_full_positiveXonly.png](images%2Ffrequency_domain_full_positiveXonly.png)
+
+One last thing. See how, in the x-axis for the above figures, the highest frequency is at 24,000 Hz (i.e., half the sampling rate).
+This is no coincidence, and is equal to the  Nyquist frequency for the signal. 
+The Nyquist frequency is a well known concept in signal processing and represents half the sampling rate of a discrete signal. 
+
+TODO - what is the Nyquist frequency
 
 # The Art: Making Asethetic(ish) Looking Pictures
 _Keeping to the mindset of 'it's not a bug, it's a feature' but in an art context - 'it's not ugly, it's intentional"_
