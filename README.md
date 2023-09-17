@@ -146,30 +146,118 @@ The Nyquist frequency is a well known concept in signal processing and represent
 
 TODO - what is the Nyquist frequency
 
-# The Art: Making Asethetic(ish) Looking Pictures
-_Keeping to the mindset of 'it's not a bug, it's a feature' but in an art context - 'it's not ugly, it's intentional"_
-I had two criteria when creating this art:
+# The Art: Making Asethetic Looking Pictures
+_Keeping to the mindset of 'it's not a bug, it's a feature' but in an art context - 'it's not ugly, it's intentional"_,
+I had three criteria when creating this art:
 
 1) Make it look nice
 2) Make it meaningful
-3) Try limit the amount of data that is thrown away 
+3) Limit the amount of data that is thrown away 
 
-The first is subjective, but I decided to just followed my gut instinct. 
+The first is subjective, but I decided to follow my gut instinct. 
 The second is because I want this art piece to be memorable, so having meaning as to why I made it the way I did is a good sign. 
-The third is to avoid transforming the data too much. 
+The third, is to avoid transforming the data too much. 
 
 ## Funky Frequency Waves
-Since audio signals are all about waves, my first go to was to create overlapping waves that would represent mountains. 
+Since audio signals are all about waves, my first go to was to create overlapping waves be analogous to the hills in the mountain. 
 I wanted to keep in the time domain for this one. 
-That way you see the changes in the voiceover time which would represent the challenge of climbing up a mountain.
-I envisioned something like breaking the clips into small 2-3 minute intervals and plotting each interval using time vs amplitude. 
+That way you see the changes in the voice over time which would represent the challenge of climbing up a mountain.
+I envisioned something like breaking the audio clip into small intervals and plotting each interval using time vs amplitude. 
 Each interval would be stacked ontop of eachother since having them all one after another would be too long horizontally. 
 
+A problem I encountered early on was the issue of dealing with the masses of data points. 
+The audio clip was nearly 16 mins of data with a sample rate of 48000 Hz. 
+That means for each second there was 48,000 separate data points, meaning I had to somehow express ~45 million data 
+points into a single image. I considered three ways: 1) drop random points, 2) drop every other point repeatedly, or 3) 
+take an average over a window. 
+TODO - EXPLAINNNN
 
-A problem I encountered early on was the issue of dealing with the masses of data points. The audio clip was nearly 16 mins of
-data with a sample rate of 48000 Hz. That means for each second there was 48,000 separate data points, meaning I had to
-somehow express ~46 million data points into a single image. I considered two paths: 1) take a average over a window, 
-or 2) drop points. 
+To create the overlapping effect, I used a [stack plot](https://python-graph-gallery.com/streamchart-basic-matplotlib/). 
+The plot looks very spiky, so to smooth it out you can use a Gaussian Kernel. 
+For a more rigorous smoothing, you can also use a grid version of Gaussian smoothing where the weights for smoothing 
+are across a grid of coordinates rather than just around the x-coordinates. 
+Now we're getting somewhere!
+
+![0-gaussian.png](images%2Ffreq-waves-overlapping%2F0-gaussian.png)
+
+Ok, let's add some colour and transparency. 
+
+For colouring, we'll define a colour to start at and a colour to end at and interpolate between them so each bin (wave)
+has its own colour. Let's also do the same for transparency aswell (starting at 0.8 and reducing to 0.4).
+
+![1-gaussian-cols-alphas.png](images%2Ffreq-waves-overlapping%2F1-gaussian-cols-alphas.png)
+
+The matplotlib stackplot has a parameter called `basline` which controls where the stacking happens. Options include: 
+- `zero` (default) = have a baseline at y=0 and stack on there. 
+- `wiggle` = minimizes the sum of the squared slopes
+- `sym` = like zero, but is symmetric
+
+Let's see what these do to the image: 
+
+![2-gaussianBaselines-cols-alphas.png](images%2Ffreq-waves-overlapping%2F2-gaussianBaselines-cols-alphas.png)
+
+Each has its unique take. I'm liking sym the best, so the remaining images below will use it! 
+
+Earlier I mentioned the need to make the data more sparse. 
+So far, the above plots have been using the "random" method. 
+Let's also see the other two methods in action: 
+
+![3-gaussianBaselines-cols-alphas-sparsify.png](images%2Ffreq-waves-overlapping%2F3-gaussianBaselines-cols-alphas-sparsify.png)
+
+Each sparisty method gives quite a different result as expected!
+(Random is still my personal fav.)
+
+Let's now look at 5 different parameters which can influence the look of the picture. They are the gaussian 
+standard deviation and gaussian offset, the number and size of the bins, and the colouring of the plot. 
+The choice for these parameters are completely subjective so will vary for each person. 
+
+The standard deviation used for the Gaussian smoothing controls will control how smooth the waves will look like. 
+The larger the standard deviation, the smoother the wave:
+
+![4-gaussianSym-sdev.png](images%2Ffreq-waves-overlapping%2F4-gaussianSym-sdev.png)
+
+The Gaussian offset is used when generating the grid for smoothing. It controls how much to offset the min and max 
+values of the grid compared to the domain of the x-values. The offset looks something like this: 
+
+Let's test out some different values...
+
+![5-gaussianSym-gaussianOffset.png](images%2Ffreq-waves-overlapping%2F5-gaussianSym-gaussianOffset.png)
+
+Negative values stretch out the waves, while positive values will close in the tips. 
+
+To get different waves to overlap, the data was chunked up and put into bins. 
+Changing the number of bins controls the number of different waves we want stacked together: 
+
+![6-gaussianSym-binsNum.png](images%2Ffreq-waves-overlapping%2F6-gaussianSym-binsNum.png)
+
+And changing the size of the bin controls how many data points can be used to define a single wave. 
+A larger size means more points so more fluctuating waves. 
+
+![7-gaussianSym-binsSize.png](images%2Ffreq-waves-overlapping%2F7-gaussianSym-binsSize.png)
+
+Finally, there's the colouring: 
+
+![8-gaussianSym-colours.png](images%2Ffreq-waves-overlapping%2F8-gaussianSym-colours.png)
+
+With all the different options in mind, this was my final choice for this art piece: 
+**Parameters**
+- stack plot
+  - baseline: wiggle
+- smoothing
+  - type: grid gaussian
+  - std dev: 15
+  - offset: 50
+- sparsity: window-and-random
+- bins
+  - number: 30
+  - size: 500
+- colours: ("#ed5394", "#eda253")
+- alphas: [0.8, 0.4]
+
+![final-frequency-waves-overlapping.png](images%2Ffreq-waves-overlapping%2Ffinal-frequency-waves-overlapping.png)
+
+
+
 
 ## Turning Polar: Revolving Beams
 ## Turning Polar: Floral Vibes 
