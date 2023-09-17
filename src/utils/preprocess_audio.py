@@ -1,5 +1,5 @@
 import numpy as np
-np.random.seed(0)
+
 
 def snip_audio(audio, time_range, sample_freq):
     # time range in minutes
@@ -80,7 +80,7 @@ def apply_preprocessing(audio, samples_per_bin, num_bins, sparsify_method='rando
     print("Initial total samples:", len(audio))
     total_samples = samples_per_bin * num_bins
     print("Total allowed samples: ", total_samples)
-    # fixme - sparsify 1st to avoid truncating end points
+    # todo - mention in readme: sparsify 1st to avoid truncating end points
     audio = sparsify_audio(audio.reshape(1, -1), total_samples, method=sparsify_method)
     print("Sparsified audio: ", audio.shape)
     audio = truncate_and_convert_to_bins(audio.flatten(), num_bins)

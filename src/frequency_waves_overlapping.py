@@ -3,7 +3,6 @@ https://python-graph-gallery.com/streamchart-basic-matplotlib/
 """
 
 import sys
-import random
 
 import matplotlib.pyplot as plt
 from scipy import stats
@@ -13,25 +12,50 @@ from utils.plot_utils import *
 from utils.preprocess_audio import *
 
 ########################################################################################################################
-# fixme - random sparsify gives diff outputs for each subplot! seeding isn't working
-AUDIO_FILEPATH = sys.argv[1]
-SAVE = False
-USE_FULL_AUDIO = False
-IS_TRANSPARENT = False
+SEED = 1111
+np.random.seed(SEED)
 
-NUM_BINS = [15]                 # [2, 15, 30, 45, 60, 75]   #[30]   # todo
-MAX_SAMPLES_PER_BIN = [100]     # [10, 100, 250, 500, 750, 1000] #[500] # todo
+AUDIO_FILEPATH = sys.argv[1]
+SAVE = True
+USE_FULL_AUDIO = True
+IS_TRANSPARENT = True
+
+NUM_BINS = [30]                 # [2, 15, 30, 45, 60, 75]
+MAX_SAMPLES_PER_BIN = [500]     # [10, 100, 250, 500, 750, 1000]
 
 SDEVS = [15]                    # [1, 5, 15, 50]
 GAUSSIAN_OFFSETS = [50]         # [-50, -25, 0, 25, 50]
 
-SPASRSIFY_METHODS = ["random"]  # ["random", "drop", "window-and-random"]
+SPASRSIFY_METHODS = ["window-and-random"]  # ["random", "drop", "window-and-random"]
 
-COLOURS = [("#0012ff", "#ff0000"), ("#0F45D2", "#bce1d0"), ("#ed5394", "#eda253"),
-           ("#6453ed", "#66ed53"), ("#967041", "#dfe191"), ("#ffffff", "#000000")]
+COLOURS = [("#ed5394", "#eda253")]  # [("#0012ff", "#ff0000"), ("#0F45D2", "#bce1d0"), ("#ed5394", "#eda253"), ("#6453ed", "#66ed53"), ("#967041", "#dfe191"), ("#ffffff", "#000000")]
 alpha_range = [0.8, 0.4]
 
-save_name = "frequency_waves_overlapping"
+########################################################################################################################
+save_name = "final-frequency-waves-overlapping"
+# save_name = "0-gaussian"
+# save_name = "1-gaussian-cols-alphas"
+# save_name = "2-gaussianBaselines-cols-alphas"
+# save_name = "3-gaussianBaselines-cols-alphas-sparsify"
+# save_name = "4-gaussianSym-sdev"
+# save_name = "5-gaussianSym-gaussianOffset"
+# save_name = "6-gaussianSym-binsNum"
+# save_name = "7-gaussianSym-binsSize"
+# save_name = "8-gaussianSym-colours"
+
+id_to_plot_shape = {
+    "final-frequency-waves-overlapping": (1, 1),
+    "0-gaussian": (3, 1),
+    "1-gaussian-cols-alphas": (3, 1),
+    "2-gaussianBaselines-cols-alphas": (3, 1),
+    "3-gaussianBaselines-cols-alphas-sparsify": (3, 1),
+    "4-gaussianSym-sdev": (2, 2),
+    "5-gaussianSym-gaussianOffset": (3, 2),
+    "6-gaussianSym-binsNum": (3, 2),
+    "7-gaussianSym-binsSize": (3, 2),
+    "8-gaussianSym-colours": (3, 2),
+}
+
 ########################################################################################################################
 def gaussian_smooth(x, y, sd=1):
     weights = np.array([stats.norm.pdf(x, m, sd) for m in x])
@@ -39,8 +63,8 @@ def gaussian_smooth(x, y, sd=1):
     return (weights * y).sum(1)
 
 
-#todo - multiprocessing?
 def gaussian_smooth_grid(x, y, grid, sd):
+    # todo - multiprocessing/pooling?
     weights = np.transpose([stats.norm.pdf(grid, m, sd) for m in x])
     weights = weights / weights.sum(0)
     return (weights * y).sum(1)
@@ -48,7 +72,6 @@ def gaussian_smooth_grid(x, y, grid, sd):
 
 ########################################################################################################################
 if __name__ == '__main__':
-
     # read audio
     sample_freq, audio = read(AUDIO_FILEPATH)
 
@@ -56,21 +79,15 @@ if __name__ == '__main__':
     if not USE_FULL_AUDIO:
         audio = snip_audio(audio, [0, 3], sample_freq)
 
-    # save_name = "3-gaussianBaselines-cols-alphas-sparsify"
-    # save_name = "4-gaussianWiggle-sdev-cols-alphas-sparsify"
-    # save_name = "5-gaussianWiggle-gaussianOffset-cols-alphas-sparsify"
-    # save_name = "6-gaussianWiggle-cols-alphas-sparsify-binsNum"
-    # save_name = "7-gaussianWiggle-cols-alphas-sparsify-binsSize"
-    save_name = "8-gaussianWiggle-cols-alphas-sparsify-colours"
-
-    fig, axs = plt.subplots(3, 2)
-    axs_list = axs.ravel()
+    # setup figure and axes
+    fig, axs = plt.subplots(*id_to_plot_shape[save_name])
+    axs_list = axs.ravel() if isinstance(axs, np.ndarray) else axs
 
     for col_idx in range(len(COLOURS)):
         colour_1, colour_2 = COLOURS[col_idx]
 
         for bin_idx in range(len(NUM_BINS)):
-
+            # get colours and alphas
             colours = get_color_gradient(colour_1, colour_2, NUM_BINS[bin_idx])
             alphas = get_alphas(alpha_range[0], alpha_range[1], NUM_BINS[bin_idx])
 
@@ -80,12 +97,15 @@ if __name__ == '__main__':
 
                     for go_idx in range(len(GAUSSIAN_OFFSETS)):
 
-                        for s_idx, sparsify_method in enumerate(SPASRSIFY_METHODS):
-                            processed_audio = apply_preprocessing(audio, MAX_SAMPLES_PER_BIN[bin_size_idx],
-                                                                  NUM_BINS[bin_idx], sparsify_method=sparsify_method)
+                        for s_idx in range(len(SPASRSIFY_METHODS)):
+                            # fixme: sketchy - want each subplot to use the same data so need to reset seed counter
+                            np.random.seed(SEED)
 
-                            # plot graph
+                            # preprocessing audio
+                            processed_audio = apply_preprocessing(audio, MAX_SAMPLES_PER_BIN[bin_size_idx],
+                                                                  NUM_BINS[bin_idx], sparsify_method=SPASRSIFY_METHODS[s_idx])
                             dp_per_bin = processed_audio.shape[1]
+
                             x = np.arange(0, dp_per_bin)
                             y = processed_audio
 
@@ -96,20 +116,21 @@ if __name__ == '__main__':
                             grid = np.linspace(-GAUSSIAN_OFFSETS[go_idx], dp_per_bin + GAUSSIAN_OFFSETS[go_idx], num=len(x))
                             y_smoothed_grid = [gaussian_smooth_grid(x, y_, grid, SDEVS[sd_idx]) for y_ in y]
 
-                            # temp
+                            ###########################################################################################
+                            # TODO - Uncomment the relevant plot
+                            ###########################################################################################
+                            # basic
                             # fig, ax = plt.subplots(figsize=(10, 7))
                             # ax.stackplot(x, y)
-                            # ax.stackplot(x, y_smoothed, baseline='zero')
-                            # ax.stackplot(x, y_smoothed_grid, baseline='zero')
-                            # ax.stackplot(x, y_smoothed_grid, baseline='zero', colors=colours)
-                            # ax.stackplot(x, y_smoothed_grid, baseline='zero', colors=colours, alpha=alphas)
-                            # ax.stackplot(x, y_smoothed_grid, baseline='wiggle', colors=colours, alpha=alphas)
-                            # ax.stackplot(x, y_smoothed_grid, baseline='sym', colors=colours, alpha=alphas)
                             # plt.axis('off')
 
+                            # final-frequency-waves-overlapping
+                            fig.set_figwidth(10)
+                            fig.set_figheight(7)
+                            axs.stackplot(x, y_smoothed_grid, baseline='wiggle', colors=colours, alpha=alphas)
+                            axs.set_axis_off()
+
                             # 0-gaussian
-                            # save_name = "0-gaussian"
-                            # fig, axs = plt.subplots(3, 1)
                             # axs[0].stackplot(x, y)
                             # axs[1].stackplot(x, y_smoothed, baseline='zero')
                             # axs[2].stackplot(x, y_smoothed_grid, baseline='zero')
@@ -117,9 +138,7 @@ if __name__ == '__main__':
                             # axs[1].set_title('+ gaussian smoothing')
                             # axs[2].set_title('+ gaussian grid smoothing')
 
-                            # 1-gaussian-cols-alphas.png
-                            # save_name = "1-gaussian-cols-alphas"
-                            # fig, axs = plt.subplots(3, 1)
+                            # 1-gaussian-cols-alphas
                             # axs[0].stackplot(x, y_smoothed_grid, baseline='zero')
                             # axs[1].stackplot(x, y_smoothed_grid, baseline='zero', colors=colours)
                             # axs[2].stackplot(x, y_smoothed_grid, baseline='zero', colors=colours, alpha=alphas)
@@ -128,8 +147,6 @@ if __name__ == '__main__':
                             # axs[2].set_title('+ colour + alpha')
 
                             # 2-gaussianBaselines-cols-alphas
-                            # save_name = "2-gaussianBaselines-cols-alphas"
-                            # fig, axs = plt.subplots(3, 1)
                             # axs[0].stackplot(x, y_smoothed_grid, baseline='zero', colors=colours, alpha=alphas)
                             # axs[1].stackplot(x, y_smoothed_grid, baseline='wiggle', colors=colours, alpha=alphas)
                             # axs[2].stackplot(x, y_smoothed_grid, baseline='sym', colors=colours, alpha=alphas)
@@ -138,55 +155,39 @@ if __name__ == '__main__':
                             # axs[2].set_title('baseline="sym"')
 
                             # 3-gaussianBaselines-cols-alphas-sparsify
-                            # axs_list[s_idx].stackplot(x, y_smoothed_grid, baseline='wiggle', colors=colours, alpha=alphas)
+                            # axs_list[s_idx].stackplot(x, y_smoothed_grid, baseline='sym', colors=colours, alpha=alphas)
                             # axs_list[s_idx].set_title(f'{sparsify_method}')
 
-                            # 4-gaussianWiggle-sdev-cols-alphas-sparsify
-                            # axs_list[sd_idx].stackplot(x, y_smoothed_grid, baseline='wiggle', colors=colours, alpha=alphas)
+                            # 4-gaussianSym-sdev
+                            # axs_list[sd_idx].stackplot(x, y_smoothed_grid, baseline='sym', colors=colours, alpha=alphas)
                             # axs_list[sd_idx].set_title(f'sd: {SDEVS[sd_idx]}, gaussian offset: {GAUSSIAN_OFFSETS[go_idx]}')
 
-                            # "5-gaussianWiggle-gaussianOffset-cols-alphas-sparsify"
-                            # axs_list[go_idx].stackplot(x, y_smoothed_grid, baseline='wiggle', colors=colours, alpha=alphas)
+                            # "5-gaussianSym-gaussianOffset"
+                            # axs_list[go_idx].stackplot(x, y_smoothed_grid, baseline='sym', colors=colours, alpha=alphas)
                             # axs_list[go_idx].set_title(f'sd: {SDEVS[sd_idx]}, gaussian offset: {GAUSSIAN_OFFSETS[go_idx]}')
 
-                            # "6-gaussianWiggle-cols-alphas-sparsify-binsNum"
-                            # axs_list[bin_idx].stackplot(x, y_smoothed_grid, baseline='wiggle', colors=colours, alpha=alphas)
+                            # "6-gaussianSym-cols-alphas-sparsify-binsNum"
+                            # axs_list[bin_idx].stackplot(x, y_smoothed_grid, baseline='sym', colors=colours, alpha=alphas)
                             # axs_list[bin_idx].set_title(f'#bins: {NUM_BINS[bin_idx]}, bin size: {MAX_SAMPLES_PER_BIN[bin_size_idx]}')
 
-                            # "7-gaussianWiggle-cols-alphas-sparsify-binsSize"
-                            # axs_list[bin_size_idx].stackplot(x, y_smoothed_grid, baseline='wiggle', colors=colours, alpha=alphas)
-                            # axs_list[bin_size_idx].set_title(
-                            #     f'#bins: {NUM_BINS[bin_idx]}, bin size: {MAX_SAMPLES_PER_BIN[bin_size_idx]}')
+                            # "7-gaussianSym-binsSize"
+                            # axs_list[bin_size_idx].stackplot(x, y_smoothed_grid, baseline='sym', colors=colours, alpha=alphas)
+                            # axs_list[bin_size_idx].set_title(f'#bins: {NUM_BINS[bin_idx]}, bin size: {MAX_SAMPLES_PER_BIN[bin_size_idx]}')
 
-                            "8-gaussianWiggle-cols-alphas-sparsify-colours"
-                            axs_list[col_idx].stackplot(x, y_smoothed_grid, baseline='wiggle', colors=colours, alpha=alphas)
-                            axs_list[col_idx].set_title(f'{COLOURS[col_idx][0]} - {COLOURS[col_idx][1]}')
+                            # "8-gaussianSym-colours"
+                            # axs_list[col_idx].stackplot(x, y_smoothed_grid, baseline='sym', colors=colours, alpha=alphas)
+                            # axs_list[col_idx].set_title(f'{COLOURS[col_idx][0]} - {COLOURS[col_idx][1]}')
 
-    for ax in axs.ravel():
-        ax.set_axis_off()
+    # turn off axis markers
+    if isinstance(axs, np.ndarray):
+        for ax in axs.ravel():
+            ax.set_axis_off()
 
-    plt.tight_layout()  # fill space
+    # fill space
+    plt.tight_layout()
 
     if SAVE:
         plt.savefig(f'../images/freq-waves-overlapping/{save_name}.png', transparent=IS_TRANSPARENT)
         print("saved")
 
     plt.show()
-
-    # VARIATIONS TO PLOT EVOLUTION
-    # no colouring, no gaussian,
-    # no colouring, gaussian
-    # no colouring, gaussian grid
-
-    # colouring, gaussian grid
-    # colouring, gaussian grid, alphas
-
-    # colouring, gaussian grid, alphas, diff baseline params
-
-    # colouring, gaussian grid, alphas, diff sparsify methods
-
-    # colouring, gaussian grid, alphas, diff gaussian hparams
-
-    # different bins and samples per bin
-
-    # diff colours
