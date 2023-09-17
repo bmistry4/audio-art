@@ -75,15 +75,17 @@ def sparsify_audio(data, max_samples, method="drop"):
         raise KeyError(f"Sparsify method '{method}' does not exist!")
     return data
 
-def apply_preprocessing(audio, samples_per_bin, num_bins):
+
+def apply_preprocessing(audio, samples_per_bin, num_bins, sparsify_method='random'):
     print("Initial total samples:", len(audio))
     total_samples = samples_per_bin * num_bins
     print("Total allowed samples: ", total_samples)
     # fixme - sparsify 1st to avoid truncating end points
-    audio = sparsify_audio(audio.reshape(1, -1), total_samples, method="random")
+    audio = sparsify_audio(audio.reshape(1, -1), total_samples, method=sparsify_method)
     print("Sparsified audio: ", audio.shape)
     audio = truncate_and_convert_to_bins(audio.flatten(), num_bins)
     print("Total samples after preprocessing", audio.size)
+    print("")
     return audio
 
 
@@ -94,6 +96,7 @@ def complex2polar(z: np.ndarray):
     # equiv to tan^-1(y/x) i.e., np.arctan(z[i].imag/ z[i].real)
     phases = np.angle(z)
     return mags, phases
+
 
 def normalize_complex_coords(z):
     norms = np.linalg.norm(z, axis=-1, keepdims=True)
