@@ -312,6 +312,16 @@ With all these in mind, my final choice was the following:
 
 ## Turning Polar: Floral Vibes 
 ### Centerpiece: Lapsing Emotions
+
+![0-baseline.png](images%2Fpolar-floral-full%2F0-baseline.png)
+![1-radii-offset.png](images%2Fpolar-floral-full%2F1-radii-offset.png)
+![2-sparsify.png](images%2Fpolar-floral-full%2F2-sparsify.png)
+![3-norm.png](images%2Fpolar-floral-full%2F3-norm.png)
+![4-binsNum.png](images%2Fpolar-floral-full%2F4-binsNum.png)
+![5-binsSize.png](images%2Fpolar-floral-full%2F5-binsSize.png)
+![6-colours.png](images%2Fpolar-floral-full%2F6-colours.png)
+![final-polar-slices.png](images%2Fpolar-floral-full%2Ffinal-polar-slices.png)
+
 ### Border: Capturing minutes
 
 # The Final Piece: Canvas Art
