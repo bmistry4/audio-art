@@ -26,6 +26,13 @@ def get_alphas(lower, upper, bins):
     return [a for a in np.linspace(lower, upper, bins)]
 
 
+def switch_off_axes(axs):
+    if isinstance(axs, np.ndarray):
+        for ax in axs.ravel():
+            ax.set_axis_off()
+    else:
+        axs.set_axis_off()
+
 ########################################################################################################################
 
 def plot_patches(theta, radii, widths, colours, axis, alphas, radii_offset=0.):
