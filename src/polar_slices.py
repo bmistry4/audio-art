@@ -7,15 +7,15 @@ import numpy as np
 from scipy.fft import fft
 from scipy.io.wavfile import read
 
-from utils.plot_utils import get_color_gradient
+from utils.plot_utils import get_color_gradient, switch_off_axes
 from utils.preprocess_audio import complex2polar, apply_preprocessing
 
 
 ########################################################################################################################
 class RunID(Enum):
     FINAL = "final-polar-slices"
-    SIMPLE = "0-simple"
-    SPARSIFY = "1-sparsify-methods"
+    BASELINE = "0-baseline"
+    SPARSIFIES = "1-sparsify-methods"
     N_SAMPLES = "2-max-samples"
     COLOURS = "3-colours"
     ALPHAS = "4-alphas"
@@ -24,8 +24,8 @@ class RunID(Enum):
 
 id_to_plot_shape = {
     RunID.FINAL: (1, 1),
-    RunID.SIMPLE: (1, 1),
-    RunID.SPARSIFY: (1, 3),
+    RunID.BASELINE: (2, 2),
+    RunID.SPARSIFIES: (1, 3),
     RunID.N_SAMPLES: (2, 3),
     RunID.COLOURS: (2, 3),
     RunID.ALPHAS: (2, 4),
@@ -33,7 +33,7 @@ id_to_plot_shape = {
 }
 
 ########################################################################################################################
-ID = RunID.FINAL
+ID = RunID.BASELINE
 save_name = ID.value
 
 SEED = 1111
@@ -53,7 +53,7 @@ ALPHAS = [0.4] #[0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8]
 
 ########################################################################################################################
 # read audio
-sample_freq, audio = read(AUDIO_FILEPATH)  # sample_freq = no. of samples per second (Hz), len(audio) = no. data points
+_, audio = read(AUDIO_FILEPATH)
 
 # setup figure and axes
 fig, axs = plt.subplots(*id_to_plot_shape[ID], subplot_kw=dict(projection="polar"))
@@ -78,8 +78,21 @@ for n_idx in range(len(MAX_SAMPLES)):
 
             for alp_idx in range(len(ALPHAS)):
 
-                # time = bar width and colour
-                if ID == RunID.SIMPLE or ID == RunID.FINAL:
+                if ID == RunID.BASELINE:
+                    axs_list[0].bar(theta, radii, align='edge')
+                    axs_list[1].bar(theta, radii, alpha=ALPHAS[alp_idx], align='edge')
+                    axs_list[2].bar(theta, radii, alpha=ALPHAS[alp_idx], align='edge',
+                                    width=np.linspace(np.pi / 32, np.pi / 8, len(theta)))
+                    axs_list[3].bar(theta, radii, alpha=ALPHAS[alp_idx], align='edge',
+                                    width=np.linspace(np.pi / 32, np.pi / 8, len(theta)), color=colours)
+
+                    axs_list[0].set_title(f'1) default polar bar plot')
+                    axs_list[1].set_title(f'2) + alpha')
+                    axs_list[2].set_title(f'3) + incremental bar width')
+                    axs_list[3].set_title(f'4) + colours')
+                    break
+
+                elif ID == RunID.FINAL:
                     axs_idx = 0
 
                 elif ID == RunID.COLOURS:
@@ -94,8 +107,8 @@ for n_idx in range(len(MAX_SAMPLES)):
                     axs_list[axs_idx].set_title(f'{MAX_SAMPLES[n_idx]}')
                     fig.suptitle("Total Number of Data Samples")
 
-                elif ID == RunID.SPARSIFY:
-                    assert len(SPASRSIFY_METHODS) > 1, f"{RunID.SPARSIFY} run needs multiple sparsify methods to plot"
+                elif ID == RunID.SPARSIFIES:
+                    assert len(SPASRSIFY_METHODS) > 1, f"{RunID.SPARSIFIES} run needs multiple sparsify methods to plot"
                     axs_idx = s_idx
                     axs_list[axs_idx].set_title(f'{SPASRSIFY_METHODS[s_idx]}')
                     fig.suptitle("Sparsify Methods")
@@ -117,15 +130,12 @@ for n_idx in range(len(MAX_SAMPLES)):
                 else:
                     raise KeyError(f"Invalid ID (={ID}) given")
 
+                # time = bar width and colour
                 axs_list[axs_idx].bar(theta, radii, width=np.linspace(np.pi / 32, np.pi / 8, len(theta)), bottom=0.0,
                                       color=colours, alpha=ALPHAS[alp_idx], align='edge', log=USE_LOG_Y)
 
 # turn off axis markers
-if isinstance(axs, np.ndarray):
-    for ax in axs.ravel():
-        ax.set_axis_off()
-else:
-    axs.set_axis_off()
+switch_off_axes(axs)
 
 fig.tight_layout()
 

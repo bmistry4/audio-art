@@ -256,10 +256,60 @@ With all the different options in mind, this was my final choice for this art pi
 
 ![final-frequency-waves-overlapping.png](images%2Ffreq-waves-overlapping%2Ffinal-frequency-waves-overlapping.png)
 
-
-
-
 ## Turning Polar: Revolving Beams
+Instead of waves which are sequential, how about something a bit more circular. 
+So plot points going around a circle, over and over again. 
+Since the FFT returns _complex numbers_ it naturally allows us to dabble with polar plots since complex numbers can 
+also be expressed as polar coordinates! 
+
+TODO - expln polar
+
+
+Since we convert the complex numbers from the cartesian form to the polar form we get the magnitudes and phases for each data point. 
+To start, assume the data has been preprocessed using the `random` sparsification technique we mentioned earlier.  
+Now, let's look at the 4 steps to get our figure. 
+
+1) Plot a polar bar chart using only the default configuration. It won't look too great. 
+You can't see any of the individual bars and the end product just looks like a distorted circle. 
+2) Add some transparency by setting the `alpha` parameter to 0.4. We start seeing some details, but the center 
+still looks very dense. 
+3) Instead of having the `width` (=0.8) the same for each point, let's grow it linearly with each point being plotted,
+i.e., `width=np.linspace(np.pi / 32, np.pi / 8, len(theta))`. 
+Now we're getting somewhere. 
+4) To top it all off, let's add some colour which will start and end at `("#8d7ed8", "#5bffef")`. 
+
+With these steps we successfully have created some polar art! 
+
+![0-baseline.png](images%2Fpolar-slices%2F0-baseline.png)
+
+There's a couple of parameters you can play around with. 
+For example, the sparsify method when preprocessing the data ...
+
+![1-sparsify-methods.png](images%2Fpolar-slices%2F1-sparsify-methods.png)
+
+The total number of data samples to plot: 
+
+![2-max-samples.png](images%2Fpolar-slices%2F2-max-samples.png)
+
+The colours to use: 
+
+![3-colours.png](images%2Fpolar-slices%2F3-colours.png)
+
+
+The amount of transparency to set: 
+
+![4-alphas.png](images%2Fpolar-slices%2F4-alphas.png)
+
+If the y-axis (representing magnitude) should use a log axis:
+
+![5-alphas-logY.png](images%2Fpolar-slices%2F5-alphas-logY.png)
+
+
+With all these in mind, my final choice was the following: 
+
+![final-polar-slices.png](images%2Fpolar-slices%2Ffinal-polar-slices.png)
+
+
 ## Turning Polar: Floral Vibes 
 ### Centerpiece: Lapsing Emotions
 ### Border: Capturing minutes
