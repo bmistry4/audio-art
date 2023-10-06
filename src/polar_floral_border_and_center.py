@@ -22,6 +22,7 @@ bin_colours = [["#ff0000", "#f9a301"], ["#61f31d", "#16d5c1"], ["#7270e8", "#e87
 # read audio
 _, original_audio = read(AUDIO_FILEPATH)  # sample_freq = no. of samples per second (Hz), len(audio) = no. data points
 
+
 def preprocess_border_audio(audio, n_bins, n_per_bin):
     audio = truncate_and_convert_to_bins(audio, n_bins)
     audio = sparsify_audio(audio, n_per_bin)
@@ -34,6 +35,7 @@ def preprocess_border_audio(audio, n_bins, n_per_bin):
     # rescale for max is 1
     yf = 1 / np.max(yf_norm, axis=-1, keepdims=True) * yf_norm
     return yf
+
 
 def plot_boarder(data, n_bins, bin_colours, subplot_radius=0.55):
     # plot organisation

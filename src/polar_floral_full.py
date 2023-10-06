@@ -12,7 +12,7 @@ from utils.preprocess_audio import sparsify_audio, truncate_and_convert_to_bins,
 
 ########################################################################################################################
 class RunID(Enum):
-    FINAL = "final-polar-slices"
+    FINAL = "final-polar-floral-full"
     BASELINE = "0-baseline"
     RADII_OFFSET = "1-radii-offset"
     SPARSIFIES = "2-sparsify"
@@ -153,8 +153,7 @@ for bin_idx in range(len(NUM_BINS)):
                                 widths_i = [0.8] * len(theta_i)
                                 colours_i = ["#1f77b4"] * len(yf[i])    # classic matplotlib blue
                                 r_sf = 4.5
-                                # show petal with 3 data samples
-                                # fixme - multiple petals because multiple bins
+                                # show petal with a few data samples. There are  multiple petals because multiple bins.
                                 plot_patches([theta_i[0]], [radii_i[0]], widths_i, colours_i, axs_list[0],
                                              radii_offset=0, alphas=[1] * len(theta_i), radius_sf=r_sf)
                                 #######################################################################################
@@ -169,7 +168,7 @@ for bin_idx in range(len(NUM_BINS)):
                                 plot_patches(theta_i, radii_i, widths_i, colours_i, axs_list[2],
                                              radii_offset=0, alphas=[1] * len(theta_i), radius_sf=r_sf)
                                 #######################################################################################
-                                # alphas - fixed - todo (keep?)
+                                # alphas - fixed
                                 plot_patches(theta_i, radii_i, widths_i, colours_i, axs_list[3],
                                              radii_offset=0, alphas=[0.4] * len(theta_i), radius_sf=r_sf)
                                 #######################################################################################
@@ -206,6 +205,3 @@ if SAVE:
     print("saved")
 
 plt.show()
-
-# with and without norm
-# with and without radii_offset in plot_patches

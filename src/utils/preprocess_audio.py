@@ -80,12 +80,14 @@ def apply_preprocessing(audio, samples_per_bin, num_bins, sparsify_method='rando
     print("Initial total samples:", len(audio))
     total_samples = samples_per_bin * num_bins
     print("Total allowed samples: ", total_samples)
+
     # todo - mention in readme: sparsify 1st to avoid truncating end points
     audio = sparsify_audio(audio.reshape(1, -1), total_samples, method=sparsify_method)
     print("Sparsified audio: ", audio.shape)
+
     audio = truncate_and_convert_to_bins(audio.flatten(), num_bins)
-    print("Total samples after preprocessing", audio.size)
-    print("")
+    print("Total samples after preprocessing\n", audio.size)
+
     return audio
 
 

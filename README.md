@@ -311,16 +311,57 @@ With all these in mind, my final choice was the following:
 
 
 ## Turning Polar: Floral Vibes 
+I like the look of the polar plot, but I wanted something a bit softer for the shape of the bars, like petals to give 
+it some floral-like look. 
+I also wanted the image to look more bust and dynamic. Something that could be more of a centerpiece. 
+To make the `bar` look more like petals, you can plot coloured in Bézier curves using the matplotlib's `PathPatch`. 
+Each PathPatch will take a Path that tells you how to draw a petal from 4 points (start point, 2 control points and an end point). 
+Like before, we'll use different colours and transparencies to make a nice layered effect.
+
 ### Centerpiece: Lapsing Emotions
+First let's get something similar to what I just described: 
+
+1) Plot bars in shape of petals. Below is an example of drawing 2 petals
+2) Plot all the petals for the full preprocessed audio. So far, it'll look like a bumpy circle.
+3) Add colour to each petal. We still can't see too many petals though...
+4) Add a fixed amount transparency (=0.4) to all petals. Now we can see some layering. 
+5) Use adaptive transparencies so each bin of data will be less transparent. Results in a nice fade out effect.
+6) Instead of having the width (=0.8) the same for each point, let's grow it linearly with each point being plotted, i.e., width=np.linspace(np.pi / 32, np.pi / 8, len(theta)).
+7) (Extra) Colour in the edges rather than the petals.
 
 ![0-baseline.png](images%2Fpolar-floral-full%2F0-baseline.png)
+
+Now we've got a good starting point, let's play around with some parameters!...
+
+When drawing the petals, we can change how far from the origin we plot from. 
+Increasing this offset can result in a small hole in the center of the figure. 
+We can also have adaptive offset values, which mean the offset will linearlly increase with each new bin of data to plot.
+
 ![1-radii-offset.png](images%2Fpolar-floral-full%2F1-radii-offset.png)
+
+We can change the method used to make the data sparse:
+
 ![2-sparsify.png](images%2Fpolar-floral-full%2F2-sparsify.png)
+
+We can normalise the audio data after it's been fourier transformed:
+
 ![3-norm.png](images%2Fpolar-floral-full%2F3-norm.png)
+
+We can adapt the number of bins:
+
 ![4-binsNum.png](images%2Fpolar-floral-full%2F4-binsNum.png)
+
+Or the number of data samples in a bin:
+
+TODO - subtitle offset is off in 2nd row!
 ![5-binsSize.png](images%2Fpolar-floral-full%2F5-binsSize.png)
+
+And there's always the choice of colour! 
+
 ![6-colours.png](images%2Fpolar-floral-full%2F6-colours.png)
-![final-polar-slices.png](images%2Fpolar-floral-full%2Ffinal-polar-slices.png)
+
+The final product looks like this! 
+![final-polar-floral-full.png](images%2Fpolar-floral-full%2Ffinal-polar-floral-full.png)
 
 ### Border: Capturing minutes
 
