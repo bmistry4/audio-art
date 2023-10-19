@@ -35,10 +35,11 @@ def switch_off_axes(axs):
 
 ########################################################################################################################
 
-def plot_patches(theta, radii, widths, colours, axis, alphas, radii_offset=0.):
+
+def plot_patches(theta, radii, widths, colours, axis, alphas, radii_offset=0., radius_sf=3, edge_only=False):
     # Plot rounded cones using Bézier curves
     for t, r, w, c, a in zip(theta, radii, widths, colours, alphas):
-        control_radius = r * 2  # hyperparam; adjust the control point influence
+        control_radius = r * radius_sf  # adjust the control point influence # todo - s.f. was 2
         vertices = [
             (t - w / 2, radii_offset),  # Start point
             (t - w / 2, control_radius),  # Control point 1
@@ -48,5 +49,8 @@ def plot_patches(theta, radii, widths, colours, axis, alphas, radii_offset=0.):
         codes = [Path.MOVETO, Path.CURVE4, Path.CURVE4, Path.CURVE4]
 
         path = Path(vertices, codes)
-        patch = patches.PathPatch(path, facecolor=c, edgecolor='none', antialiased=True, alpha=a)
+        if edge_only:
+            patch = patches.PathPatch(path, facecolor="none", edgecolor=c, antialiased=True, alpha=a)
+        else:
+            patch = patches.PathPatch(path, facecolor=c, edgecolor="none", antialiased=True, alpha=a)
         axis.add_patch(patch)
