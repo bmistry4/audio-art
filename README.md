@@ -5,9 +5,11 @@
 - To use pydub requires installing ffmpeg (follow https://www.wikihow.com/Install-FFmpeg-on-Windows)
 
 # TODO
+- https://medium.com/@reegan_anne/fully-customizable-qr-codes-in-python-7eb8a7c3b0da 
 - create private github with audio file and give access to fam. 
 - Create qr code which is linked to file 
 - add qr code to iamge
+- https://www.photobox.co.uk/
 ---
 # Blog
 # Static Audio Art
@@ -361,9 +363,51 @@ And there's always the choice of colour!
 ![6-colours.png](images%2Fpolar-floral-full%2F6-colours.png)
 
 The final product looks like this! 
+
 ![final-polar-floral-full.png](images%2Fpolar-floral-full%2Ffinal-polar-floral-full.png)
 
 ### Border: Capturing minutes
+The image above looks like a neat piece containing data from the full length clip. But I feel something a bit more 
+fine-grained, like having a image representing ever minute-or-so would be a nice touch. 
+Let's make a circular border which has small flower-like images, where each flower represents a minute of data. 
+I've made some slight changes to what the image represents. 
+- Each flower represents ~1 minute of audio
+- The radius from the polar coordinates is still used to determine the length of the petal
+- The width of the petal is fixed to pi/8  
+- The theta of the polar coordinates is no longer used. Instead the data is plotted in order in an anticlockwise fashion.
+So, the start of the audio is at angle 0 degrees and the end of the audio would have done the full loop and be at 360 degrees.
+
+Now let's look at some examples...
+
+First see how the flowers are organised. You get an evenly spaced out circular border: 
+
+![3-binsNum.png](images%2Fpolar-floral-segments-circle%2F3-binsNum.png)
+
+See the effects of the different sparsification methods:
+ 
+![1-sparsify.png](images%2Fpolar-floral-segments-circle%2F1-sparsify.png)
+
+See the effect of setting differet radii offset values: 
+
+![2-radii-offset.png](images%2Fpolar-floral-segments-circle%2F2-radii-offset.png)
+
+The effect of changing the number of allowed datapoints to represent a single flower (i.e., bin):
+
+![4-binSize.png](images%2Fpolar-floral-segments-circle%2F4-binSize.png)
+
+And finally, using different colour schemes:
+
+![5-colours.png](images%2Fpolar-floral-segments-circle%2F5-colours.png)
+
+The final result: 
+
+![final-polar-floral-segments-circle.png](images%2Fpolar-floral-segments-circle%2Ffinal-polar-floral-segments-circle.png)
 
 # The Final Piece: Canvas Art
-_Just in time for Christmas!_
+Now let's combine the floral boarder to the centerpiece!
+
+
+
+
+
+_Just in time for Christmas 2023! :D_
