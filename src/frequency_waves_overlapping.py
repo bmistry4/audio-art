@@ -14,7 +14,7 @@ from utils.preprocess_audio import *
 
 ########################################################################################################################
 class RunID(Enum):
-    FINAL = "final-frequency-waves-overlapping"
+    FINAL = "final-frequency-waves-overlapping_dpi-600"
     GAUSSIAN = "0-gaussian"
     COLOUR_AND_ALPHA = "1-gaussian-cols-alphas"
     G_BASLINES = "2-gaussianBaselines-cols-alphas"
@@ -51,18 +51,19 @@ SAVE = False
 USE_FULL_AUDIO = True
 IS_TRANSPARENT = False
 
-NUM_BINS = [30]                 # [2, 15, 30, 45, 60, 75]
-MAX_SAMPLES_PER_BIN = [500]     # [10, 100, 250, 500, 750, 1000]
+NUM_BINS = [2, 15, 30, 45, 60, 75] if ID == RunID.N_BINS else [30]
+MAX_SAMPLES_PER_BIN = [10, 100, 250, 500, 750, 1000] if ID == RunID.BIN_SIZE else [500]
 
-SDEVS = [15]                    # [1, 5, 15, 50]
-GAUSSIAN_OFFSETS = [50]         # [-50, -25, 0, 25, 50]
+SDEVS = [1, 5, 15, 50] if ID == RunID.G_SDEVS else [15]
+GAUSSIAN_OFFSETS = [-50, -25, 0, 25, 50] if ID == RunID.G_OFFSETS else [50]
 
-SPASRSIFY_METHODS = ["window-and-random"]  # ["random", "drop", "window-and-random"]
+SPASRSIFY_METHODS = ["random", "drop", "window-and-random"] if ID == RunID.SPARSIFIES else ["window-and-random"]
 
-COLOURS = [("#ed5394", "#eda253")]  # [("#0012ff", "#ff0000"), ("#0F45D2", "#bce1d0"), ("#ed5394", "#eda253"), ("#6453ed", "#66ed53"), ("#967041", "#dfe191"), ("#ffffff", "#000000")]
+COLOURS = [("#0012ff", "#ff0000"), ("#0F45D2", "#bce1d0"), ("#ed5394", "#eda253"), ("#6453ed", "#66ed53"),
+           ("#967041", "#dfe191"), ("#ffffff", "#000000")] if ID == RunID.COLOURS else [("#ed5394", "#eda253")]
 alpha_range = [0.8, 0.4]
 
-
+dpi = 600 if ID == RunID.FINAL else None
 ########################################################################################################################
 
 def gaussian_smooth(x, y, sd=1):
@@ -72,7 +73,6 @@ def gaussian_smooth(x, y, sd=1):
 
 
 def gaussian_smooth_grid(x, y, grid, sd):
-    # todo - multiprocessing/pooling?
     weights = np.transpose([stats.norm.pdf(grid, m, sd) for m in x])
     weights = weights / weights.sum(0)
     return (weights * y).sum(1)
@@ -188,7 +188,7 @@ if __name__ == '__main__':
     plt.tight_layout()
 
     if SAVE:
-        plt.savefig(f'../images/freq-waves-overlapping/{save_name}.png', transparent=IS_TRANSPARENT)
+        plt.savefig(f'../images/freq-waves-overlapping/{save_name}.png', transparent=IS_TRANSPARENT, dpi=dpi)
         print("saved")
 
     plt.show()
