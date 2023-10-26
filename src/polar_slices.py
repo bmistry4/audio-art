@@ -13,7 +13,7 @@ from utils.preprocess_audio import complex2polar, apply_preprocessing
 
 ########################################################################################################################
 class RunID(Enum):
-    FINAL = "final-polar-slices"
+    FINAL = "final-polar-slices_dpi-600"
     BASELINE = "0-baseline"
     SPARSIFIES = "1-sparsify-methods"
     N_SAMPLES = "2-max-samples"
@@ -33,24 +33,30 @@ id_to_plot_shape = {
 }
 
 ########################################################################################################################
-ID = RunID.BASELINE
+ID = RunID.FINAL
 save_name = ID.value
 
 SEED = 1111
 np.random.seed(SEED)
 
-
-AUDIO_FILEPATH = sys.argv[1]
+AUDIO_FILEPATH = sys.argv[1]    # path to audio file
 SAVE = False
 IS_TRANSPARENT = False
 USE_LOG_Y = False
 
-# TODO - set params
-MAX_SAMPLES = [150] #[50, 150, 250, 350, 450, 550]# [150] # SAMPLE_RATE * DURATION
-SPASRSIFY_METHODS =  ["random"] #["random", "drop", "window-and-random"]
-COLOURS = [("#8d7ed8", "#5bffef")]  # [("#0012ff", "#ff0000"), ("#0F45D2", "#bce1d0"), ("#ed5394", "#eda253"), ("#6453ed", "#66ed53"), ("#967041", "#dfe191"), ("#ffffff", "#000000")]
-ALPHAS = [0.4] #[0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8]
+MAX_SAMPLES = [50, 150, 250, 350, 450, 550] if ID == RunID.N_SAMPLES else [150]
+SPASRSIFY_METHODS = ["random", "drop", "window-and-random"] if ID == RunID.SPARSIFIES else ["random"]
+COLOURS = [
+    ("#0012ff", "#ff0000"),
+    ("#0F45D2", "#bce1d0"),
+    ("#ed5394", "#eda253"),
+    ("#6453ed", "#66ed53"),
+    ("#967041", "#dfe191"),
+    ("#ffffff", "#000000")
+] if ID == RunID.COLOURS else [("#8d7ed8", "#5bffef")]
+ALPHAS = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8] if ID in [RunID.ALPHAS, RunID.ALPHAS_LOGY] else [0.4]
 
+dpi = 600 if ID == RunID.FINAL else None
 ########################################################################################################################
 # read audio
 _, audio = read(AUDIO_FILEPATH)
@@ -140,7 +146,7 @@ switch_off_axes(axs)
 fig.tight_layout()
 
 if SAVE:
-    plt.savefig(f'../images/polar-slices/{save_name}.png', transparent=IS_TRANSPARENT)
+    plt.savefig(f'../images/polar-slices/{save_name}.png', transparent=IS_TRANSPARENT, dpi=dpi)
     print("saved")
 
 plt.show()

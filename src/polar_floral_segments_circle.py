@@ -13,7 +13,7 @@ from utils.preprocess_audio import sparsify_audio, truncate_and_convert_to_bins,
 
 ########################################################################################################################
 class RunID(Enum):
-    FINAL = "final-polar-floral-segments-circle"
+    FINAL = "final-polar-floral-segments-circle_dpi-600"
     BASELINE = "0-baseline"
     SPARSIFIES = "1-sparsify"
     RADII_OFFSET = "2-radii-offset"
@@ -32,7 +32,7 @@ id_to_plot_shape = {
     RunID.RADII_OFFSET: (1, 1),
 }
 ########################################################################################################################
-ID = RunID.BIN_SIZE
+ID = RunID.FINAL
 save_name = ID.value
 
 SEED = 1111
@@ -40,7 +40,7 @@ SEED = 1111
 AUDIO_FILEPATH = sys.argv[1]
 SAVE = True
 USE_FULL_AUDIO = True
-IS_TRANSPARENT = True if ID == RunID.FINAL else False
+IS_TRANSPARENT = False # True if ID == RunID.FINAL else False
 
 RADII_OFFSET = [0, 1] if ID == RunID.RADII_OFFSET else [0]
 NUM_BINS = [1, 2, 5, 10, 15, 20] if ID == RunID.N_BINS else [16]
@@ -74,6 +74,9 @@ BIN_COLOURS = [
 ] if ID == RunID.COLOURS else [
         [["#ff0000", "#f9a301"], ["#61f31d", "#16d5c1"], ["#7270e8", "#e87070"], ["#f75919", "#f2fa00"]],
 ]
+
+dpi = 600 if ID == RunID.FINAL else None
+########################################################################################################################
 
 # read audio
 _, audio = read(AUDIO_FILEPATH)  # sample_freq = no. of samples per second (Hz), len(audio) = no. data points
@@ -170,8 +173,8 @@ for bin_size_idx in range(len(MAX_SAMPLES_PER_BIN)):
                     if SAVE:
 
                         plt.savefig(f'../images/polar-floral-segments-circle/{save_name}.png',
-                                    transparent=IS_TRANSPARENT)
-                        print("saved")
+                                    transparent=IS_TRANSPARENT, dpi=dpi)
+                        print(f"saved: {save_name}")
 
                     plt.show()
 

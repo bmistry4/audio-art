@@ -12,7 +12,7 @@ from utils.preprocess_audio import sparsify_audio, truncate_and_convert_to_bins,
 
 ########################################################################################################################
 class RunID(Enum):
-    FINAL = "final-polar-floral-full"
+    FINAL = "final-polar-floral-center_dpi-600" #"final-polar-floral-center-round_dpi-600"
     BASELINE = "0-baseline"
     RADII_OFFSET = "1-radii-offset"
     SPARSIFIES = "2-sparsify"
@@ -42,13 +42,13 @@ np.random.seed(SEED)
 AUDIO_FILEPATH = sys.argv[1]
 SAVE = False
 USE_FULL_AUDIO = True
-IS_TRANSPARENT = True if ID == RunID.FINAL else False
+IS_TRANSPARENT = False  # True if ID == RunID.FINAL else False
 
 USE_NORMALISATION = [True, False] if ID == RunID.USE_NORMALISATION else [True]
 RADII_OFFSET = [0, 0.1, 0.5, 0.8, 1, -1] if ID == RunID.RADII_OFFSET else [-1]
 
-NUM_BINS = [1, 2, 5, 10, 15, 20] if ID == RunID.N_BINS else [10]    # todo or 16
-MAX_SAMPLES_PER_BIN = [10, 15, 25, 50, 75, 100] if ID == RunID.BIN_SIZE else [50]  # todo or 35
+NUM_BINS = [1, 2, 5, 10, 15, 20] if ID == RunID.N_BINS else [10]
+MAX_SAMPLES_PER_BIN = [10, 15, 25, 50, 75, 100] if ID == RunID.BIN_SIZE else [50]
 SPASRSIFY_METHODS = ["random", "drop", "window-and-random"] if ID == RunID.SPARSIFIES else ["random"]
 
 BIN_COLOURS = [
@@ -63,6 +63,8 @@ BIN_COLOURS = [
     ] if ID == RunID.COLOURS else [
         [["#ee2ad6", "#f8f242"], ["#61f31d", "#16d5c1"], ["#7270e8", "#e87070"], ["#f75919", "#f2fa00"]]
 ]
+
+dpi = 600 if ID == RunID.FINAL else None
 ########################################################################################################################
 
 # read audio
@@ -201,7 +203,7 @@ switch_off_axes(axs)
 fig.tight_layout()
 
 if SAVE:
-    plt.savefig(f'../images/polar-floral-full/{save_name}.png', transparent=IS_TRANSPARENT)
+    plt.savefig(f'../images/polar-floral-full/{save_name}.png', transparent=IS_TRANSPARENT, dpi=dpi)
     print("saved")
 
 plt.show()
