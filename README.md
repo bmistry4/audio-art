@@ -256,7 +256,7 @@ With all the different options in mind, this was my final choice for this art pi
 - colours: ("#ed5394", "#eda253")
 - alphas: [0.8, 0.4]
 
-![final-frequency-waves-overlapping.png](images%2Ffreq-waves-overlapping%2Ffinal-frequency-waves-overlapping.png)
+![final-frequency-waves-overlapping_dep-600.png](images%2Ffreq-waves-overlapping%2Ffinal-frequency-waves-overlapping_dpi-600.png)
 
 ## Turning Polar: Revolving Beams
 Instead of waves which are sequential, how about something a bit more circular. 
@@ -309,8 +309,7 @@ If the y-axis (representing magnitude) should use a log axis:
 
 With all these in mind, my final choice was the following: 
 
-![final-polar-slices.png](images%2Fpolar-slices%2Ffinal-polar-slices.png)
-
+![final-polar-slices_dpi-600.png](images%2Fpolar-slices%2Ffinal-polar-slices_dpi-600.png)
 
 ## Turning Polar: Floral Vibes 
 I like the look of the polar plot, but I wanted something a bit softer for the shape of the bars, like petals to give 
@@ -364,7 +363,7 @@ And there's always the choice of colour!
 
 The final product looks like this! 
 
-![final-polar-floral-full.png](images%2Fpolar-floral-full%2Ffinal-polar-floral-full.png)
+![final-polar-floral-center-round_dpi-600.png](images%2Fpolar-floral-full%2Ffinal-polar-floral-center-round_dpi-600.png)
 
 ### Border: Capturing minutes
 The image above looks like a neat piece containing data from the full length clip. But I feel something a bit more 
@@ -401,7 +400,8 @@ And finally, using different colour schemes:
 
 The final result: 
 
-![final-polar-floral-segments-circle.png](images%2Fpolar-floral-segments-circle%2Ffinal-polar-floral-segments-circle.png)
+
+![final-polar-floral-segments-circle_dpi-600.png](images%2Fpolar-floral-segments-circle%2Ffinal-polar-floral-segments-circle_dpi-600.png)
 
 # The Final Piece: Canvas Art
 Now let's combine the floral boarder to the centerpiece!
