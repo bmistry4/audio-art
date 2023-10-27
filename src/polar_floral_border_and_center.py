@@ -12,47 +12,54 @@ from utils.preprocess_audio import normalize_complex_coords, complex2polar, appl
 
 ########################################################################################################################
 class RunID(Enum):
-    FINAL = "final"
+    BORDER_AND_CENTER = "final-polar-floral-borderAndCenter_dpi-600"
+    CENTER = "final-polar-floral-center_dpi-600"
+    BORDER = "final-polar-floral-border_dpi-600"
+    THICK_BORDER = "final-polar-floral-thickBorder_dpi-600"
 
 
 id_to_plot_shape = {
-    RunID.FINAL: (1, 1),
+    RunID.BORDER_AND_CENTER: (1, 1),
+    RunID.CENTER: (1, 1),
+    RunID.BORDER: (1, 1),
+    RunID.THICK_BORDER: (1, 1),
 }
 ########################################################################################################################
-ID = RunID.FINAL
+ID = RunID.THICK_BORDER
 save_name = ID.value
 
 SEED = 1111
+np.random.seed(SEED)
 
 AUDIO_FILEPATH = sys.argv[1]
 SAVE = True
 USE_FULL_AUDIO = True
 
 fig = plt.figure(figsize=(10, 10))
-
+dpi = 600
 #######################################################################################################################
 B_NUM_BINS = 16
 B_MAX_SAMPLES_PER_BIN = 375
 B_BIN_COLOURS = [["#ff0000", "#f9a301"], ["#61f31d", "#16d5c1"], ["#7270e8", "#e87070"], ["#f75919", "#f2fa00"]]
 B_RADII_OFFSET = 0
 B_SPASRSIFY_METHOD = "random"
+B_THICK = True if ID == RunID.THICK_BORDER else False
 
-C_NUM_BINS = 10  # todo or 16
-C_MAX_SAMPLES_PER_BIN = 31  # todo or 35
+C_NUM_BINS = 10
+C_MAX_SAMPLES_PER_BIN = 31
 C_BIN_COLOURS = [["#ee2ad6", "#f8f242"], ["#61f31d", "#16d5c1"], ["#7270e8", "#e87070"], ["#f75919", "#f2fa00"]]
 C_SPASRSIFY_METHOD = "random"
 
 #######################################################################################################################
 
 
-def preprocess_border_audio(audio, n_bins, n_per_bin):
-    # fixme: sketchy - want each subplot to use the same data so need to reset seed counter
+def preprocess_border_audio(data, n_bins, n_per_bin):
     np.random.seed(SEED)
-    processed_audio = apply_preprocessing(audio, B_MAX_SAMPLES_PER_BIN, B_NUM_BINS, sparsify_method=B_SPASRSIFY_METHOD)
-    yf = fft(processed_audio, axis=-1)
+    processed_data = apply_preprocessing(data, n_per_bin, n_bins, sparsify_method=B_SPASRSIFY_METHOD)
+    ftt_data = fft(processed_data, axis=-1)
     # rescale for max is 1
-    yf = 1 / np.max(yf, axis=-1, keepdims=True) * yf
-    return yf
+    ftt_data = 1 / np.max(ftt_data, axis=-1, keepdims=True) * ftt_data
+    return ftt_data
 
 
 def plot_boarder(data, n_bins, bin_colours, subplot_radius=0.55):
@@ -73,11 +80,10 @@ def plot_boarder(data, n_bins, bin_colours, subplot_radius=0.55):
 
         x = center_x - subplot_radius * np.cos(angles[i])
         y = center_y - subplot_radius * -np.sin(angles[i])
-        # ax = fig.add_axes([x - 0.25, y - 0.25, 0.5, 0.5], projection='polar')  # fixme: for qrcode (thick)
-        # ax = fig.add_axes([x - 0.2, y - 0.2, 0.4, 0.4], projection='polar')
-        ax = fig.add_axes([x - 0.15, y - 0.15, 0.3, 0.3], projection='polar')  # Adjust the position and size as needed
-        # ax = fig.add_axes([x - 0.13, y - 0.13, 0.26, 0.26], projection="polar")  # Adjust the position and size as needed
-        # ax = fig.add_axes([x - 0.09, y - 0.09, 0.18, 0.18], projection="polar")  # Adjust the position and size as needed
+        if B_THICK:
+            ax = fig.add_axes([x - 0.25, y - 0.25, 0.5, 0.5], projection='polar')
+        else:
+            ax = fig.add_axes([x - 0.15, y - 0.15, 0.3, 0.3], projection='polar')
 
         plot_patches(theta_i, radii_i, widths_i, colours_i, ax,
                      radius_sf=2,
@@ -90,20 +96,21 @@ def plot_boarder(data, n_bins, bin_colours, subplot_radius=0.55):
 
 #######################################################################################################################
 
-def plot_center_piece(original_audio):
-    audio = apply_preprocessing(original_audio, C_MAX_SAMPLES_PER_BIN, C_NUM_BINS, sparsify_method=C_SPASRSIFY_METHOD)
-    yf = fft(audio, axis=-1)
-    yf = normalize_complex_coords(yf)
+def plot_center_piece(data):
+    np.random.seed(SEED)    # comment out for to reproduce canvas print 
+    processed_data = apply_preprocessing(data, C_MAX_SAMPLES_PER_BIN, C_NUM_BINS, sparsify_method=C_SPASRSIFY_METHOD)
+    fft_y = fft(processed_data, axis=-1)
+    fft_y = normalize_complex_coords(fft_y)
 
     ax = fig.add_subplot(111, projection='polar')
 
     for i in range(C_NUM_BINS):
         # complex to polar
-        radii_i, theta_i = complex2polar(yf[i])
+        radii_i, theta_i = complex2polar(fft_y[i])
         widths_i = np.linspace(np.pi / 32, np.pi / 8, len(theta_i))
         colours_i = get_color_gradient(C_BIN_COLOURS[i % len(C_BIN_COLOURS)][0],
                                        C_BIN_COLOURS[i % len(C_BIN_COLOURS)][1],
-                                       len(yf[i])
+                                       len(fft_y[i])
                                        )
         plot_patches(theta_i, radii_i, widths_i, colours_i, ax,
                      radii_offset=i / C_NUM_BINS,
@@ -115,14 +122,14 @@ def plot_center_piece(original_audio):
 
 if __name__ == '__main__':
     _, original_audio = read(AUDIO_FILEPATH)
-    yf = preprocess_border_audio(original_audio, B_NUM_BINS, B_MAX_SAMPLES_PER_BIN)
-    plot_boarder(yf, B_NUM_BINS, B_BIN_COLOURS, subplot_radius=0.55)
-    # plot_center_piece(original_audio)
+
+    if ID in [RunID.BORDER, RunID.THICK_BORDER, RunID.BORDER_AND_CENTER]:
+        fft_audio = preprocess_border_audio(original_audio, B_NUM_BINS, B_MAX_SAMPLES_PER_BIN)
+        plot_boarder(fft_audio, B_NUM_BINS, B_BIN_COLOURS, subplot_radius=0.55)
+    if ID in [RunID.CENTER, RunID.BORDER_AND_CENTER]:
+        plot_center_piece(original_audio)
 
     if SAVE:
-        # plt.savefig('../images/qrcode/FINAL/final-polar-borderAndCenter_dpi-600.png', dpi=600, transparent=False)
-        # plt.savefig('../images/qrcode/FINAL/final-polar-center_dpi-600.png', dpi=600, transparent=False)
-        plt.savefig('../images/qrcode/FINAL/final-polar-thickBorder_dpi-600.png', dpi=600, transparent=False)
-        # plt.savefig('../images/qrcode/FINAL/final-polar-border_dpi-600.png', dpi=600, transparent=False)
-        print("saved")
+        plt.savefig(f'../images/polar-floral-border-and-center/{save_name}.png', dpi=dpi)
+        print("saved: ", save_name)
     plt.show()
