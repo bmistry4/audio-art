@@ -19,43 +19,41 @@ class RunID(Enum):
     F4 = "bkgThickFloral_logoNone"
     F5 = "bkgThickFloral_logoWaves"
 
-
 id_to_meta_files = {
     RunID.F1: {
-        "background": "final-polar-thickBorder_dpi-600",
+        "background": "final-polar-floral-thickBorder_dpi-600",
         "logo": "final-polar-floral-center_dpi-600",
         "round_logo": True,
         "logo_radius": 2000,
     },
 
     RunID.F2: {
-        "background": "final-polar-thickBorder_dpi-600",
-        "logo": "final-polar-floral-full-round_dpi-600",
+        "background": "final-polar-floral-thickBorder_dpi-600",
+        "logo": "final-polar-floral-center-round_dpi-600",
         "round_logo": True,
         "logo_radius": 1400,
     },
 
     RunID.F3: {
-        "background": "final-polar-borderAndCenter_dpi-600",
+        "background": "final-polar-floral-borderAndCenter_dpi-600",
         "logo": None,
         "round_logo": False,
         "logo_radius": 2000,
     },
 
     RunID.F4: {
-        "background": "final-polar-thickBorder_dpi-600",
+        "background": "final-polar-floral-thickBorder_dpi-600",
         "logo": None,
         "round_logo": False,
         "logo_radius": 2000,
     },
 
     RunID.F5: {
-        "background": "final-polar-thickBorder_dpi-600",
+        "background": "final-polar-floral-thickBorder_dpi-600",
         "logo": "final-frequency-waves-overlapping_dpi-600",
         "round_logo": True,
         "logo_radius": 2000,
     },
-
 }
 
 
@@ -86,62 +84,66 @@ def create_savepath(dir, filename, module_drawer, dpi, ext):
 
 
 ########################################################################################################################
-ID = RunID.F2
-save_name = ID.value
-data = sys.argv[1]
-SAVE = True
-load_dir = "../images/qrcode/FINAL/"
-save_dir = "../images/qrcode/FINAL/saved/"
-ext = ".png"
-dpi = 1200
-round_radius = id_to_meta_files[ID]["logo_radius"]
+# for id in RunID:
+for id in [RunID.F2]:
+    ID = id         # canvas print ID = RunID.F2
+    save_name = ID.value
+    data = sys.argv[1]
+    SAVE = True
+    dpi = 600       # set dpi for higher resolution
+    box_size = 30   # higher box size = better quality image; use 50 for canvas print
 
-bkg_img = os.path.join(load_dir, id_to_meta_files[ID]["background"] + ext) \
-    if (id_to_meta_files[ID]["background"] is not None) else None
+    load_dir = "../images/qrcode/load/"
+    save_dir = "../images/qrcode/save/"
+    ext = ".png"
 
-logo_img = os.path.join(load_dir, id_to_meta_files[ID]["logo"] + ext) \
-    if (id_to_meta_files[ID]["logo"] is not None) else None
+    round_radius = id_to_meta_files[ID]["logo_radius"]
 
-rounded_logo_img = add_suffix_to_filepath(logo_img, "_rounded") if id_to_meta_files[ID]["round_logo"] else None
+    bkg_img = os.path.join(load_dir, id_to_meta_files[ID]["background"] + ext) \
+        if (id_to_meta_files[ID]["background"] is not None) else None
 
-if bkg_img is None:
-    raise Exception("Need a file for background image! having no background isn't supported!")
+    logo_img = os.path.join(load_dir, id_to_meta_files[ID]["logo"] + ext) \
+        if (id_to_meta_files[ID]["logo"] is not None) else None
 
-print("bkg\t", bkg_img)
-print("logo\t", logo_img)
-print("rounded logo\t", rounded_logo_img)
+    rounded_logo_img = add_suffix_to_filepath(logo_img, "_rounded") if id_to_meta_files[ID]["round_logo"] else None
 
-########################################################################################################################
+    if bkg_img is None:
+        raise Exception("Need a file for background image! having no background isn't supported!")
 
-if not hasattr(PIL.Image, 'Resampling'):
-    PIL.Image.Resampling = PIL.Image
+    print("bkg\t", bkg_img)
+    print("logo\t", logo_img)
+    print("rounded logo\t", rounded_logo_img)
 
-# round center image if needed
-if rounded_logo_img is not None:
-    if not os.path.exists(rounded_logo_img):
-        im = Image.open(logo_img)
-        im = add_corners(im, round_radius)
-        im.save(rounded_logo_img)
-        print("saved rounded logo")
+    ########################################################################################################################
 
-    logo_img = rounded_logo_img
+    if not hasattr(PIL.Image, 'Resampling'):
+        PIL.Image.Resampling = PIL.Image
 
-# for module_drawer in [RoundedModuleDrawer]:
-for module_drawer in [RoundedModuleDrawer, CircleModuleDrawer, VerticalBarsDrawer,
-                      SquareModuleDrawer, HorizontalBarsDrawer, GappedSquareModuleDrawer]:
-    qr = qrcode.QRCode(version=1, error_correction=qrcode.constants.ERROR_CORRECT_H, border=6, box_size=30)
-    qr.add_data(data)
-    qr_img = qr.make_image(image_factory=StyledPilImage,
-                           module_drawer=module_drawer(),
-                           embeded_image_path=logo_img,
-                           color_mask=ImageColorMask(back_color=(1, 1, 1), color_mask_path=bkg_img),
-                           )
+    # round center image if needed
+    if rounded_logo_img is not None:
+        if not os.path.exists(rounded_logo_img):
+            im = Image.open(logo_img)
+            im = add_corners(im, round_radius)
+            im.save(rounded_logo_img)
+            print("saved rounded logo")
 
-    if SAVE:
-        save_path = create_savepath(save_dir, save_name, module_drawer.__name__, dpi, ext)
-        # set dpi for higher resolution
-        qr_img.save(save_path, dpi=(dpi, dpi))
-        print(f"saved at: {save_path}")
+        logo_img = rounded_logo_img
+
+    for module_drawer in [VerticalBarsDrawer]:
+    # for module_drawer in [RoundedModuleDrawer, CircleModuleDrawer, VerticalBarsDrawer,
+    #                       SquareModuleDrawer, HorizontalBarsDrawer, GappedSquareModuleDrawer]:
+        qr = qrcode.QRCode(version=1, error_correction=qrcode.constants.ERROR_CORRECT_H, border=6, box_size=box_size)
+        qr.add_data(data)
+        qr_img = qr.make_image(image_factory=StyledPilImage,
+                               module_drawer=module_drawer(),
+                               embeded_image_path=logo_img,
+                               color_mask=ImageColorMask(back_color=(1, 1, 1), color_mask_path=bkg_img),
+                               )
+
+        if SAVE:
+            save_path = create_savepath(save_dir, save_name, module_drawer.__name__, dpi, ext)
+            qr_img.save(save_path, dpi=(dpi, dpi))
+            print(f"saved at: {save_path}")
 
 
 print("completed")
