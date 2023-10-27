@@ -10,6 +10,8 @@ from qrcode.image.styles.colormasks import ImageColorMask
 from qrcode.image.styles.moduledrawers import RoundedModuleDrawer, CircleModuleDrawer, VerticalBarsDrawer, \
     SquareModuleDrawer, HorizontalBarsDrawer, GappedSquareModuleDrawer
 
+from utils.file_loading import create_directory
+
 
 ########################################################################################################################
 class RunID(Enum):
@@ -19,6 +21,7 @@ class RunID(Enum):
     F4 = "bkgThickFloral_logoNone"
     F5 = "bkgThickFloral_logoWaves"
 
+# TODO: you'll need to copy over the relevant files to the ../images/qrcode/load
 id_to_meta_files = {
     RunID.F1: {
         "background": "final-polar-floral-thickBorder_dpi-600",
@@ -84,18 +87,20 @@ def create_savepath(dir, filename, module_drawer, dpi, ext):
 
 
 ########################################################################################################################
-# for id in RunID:
-for id in [RunID.F2]:
+# for id in [RunID.F2]:
+for id in RunID:
     ID = id         # canvas print ID = RunID.F2
     save_name = ID.value
     data = sys.argv[1]
     SAVE = True
     dpi = 600       # set dpi for higher resolution
     box_size = 30   # higher box size = better quality image; use 50 for canvas print
+    ext = ".png"
 
     load_dir = "../images/qrcode/load/"
     save_dir = "../images/qrcode/save/"
-    ext = ".png"
+    create_directory(load_dir)
+    create_directory(save_dir)
 
     round_radius = id_to_meta_files[ID]["logo_radius"]
 
@@ -113,8 +118,7 @@ for id in [RunID.F2]:
     print("bkg\t", bkg_img)
     print("logo\t", logo_img)
     print("rounded logo\t", rounded_logo_img)
-
-    ########################################################################################################################
+    ####################################################################################################################
 
     if not hasattr(PIL.Image, 'Resampling'):
         PIL.Image.Resampling = PIL.Image
@@ -129,9 +133,9 @@ for id in [RunID.F2]:
 
         logo_img = rounded_logo_img
 
-    for module_drawer in [VerticalBarsDrawer]:
-    # for module_drawer in [RoundedModuleDrawer, CircleModuleDrawer, VerticalBarsDrawer,
-    #                       SquareModuleDrawer, HorizontalBarsDrawer, GappedSquareModuleDrawer]:
+    # for module_drawer in [VerticalBarsDrawer]:
+    for module_drawer in [RoundedModuleDrawer, CircleModuleDrawer, VerticalBarsDrawer,
+                          SquareModuleDrawer, HorizontalBarsDrawer, GappedSquareModuleDrawer]:
         qr = qrcode.QRCode(version=1, error_correction=qrcode.constants.ERROR_CORRECT_H, border=6, box_size=box_size)
         qr.add_data(data)
         qr_img = qr.make_image(image_factory=StyledPilImage,
