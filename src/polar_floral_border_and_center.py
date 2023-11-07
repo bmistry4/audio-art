@@ -16,6 +16,7 @@ class RunID(Enum):
     CENTER = "final-polar-floral-center_dpi-600"
     BORDER = "final-polar-floral-border_dpi-600"
     THICK_BORDER = "final-polar-floral-thickBorder_dpi-600"
+    THICK_BORDER_AND_CENTER = "final-polar-floral-thickBorderAndCenter_dpi-600"
 
 
 id_to_plot_shape = {
@@ -23,9 +24,10 @@ id_to_plot_shape = {
     RunID.CENTER: (1, 1),
     RunID.BORDER: (1, 1),
     RunID.THICK_BORDER: (1, 1),
+    RunID.THICK_BORDER_AND_CENTER: (1, 1),
 }
 ########################################################################################################################
-ID = RunID.THICK_BORDER
+ID = RunID.THICK_BORDER_AND_CENTER
 save_name = ID.value
 
 SEED = 1111
@@ -43,7 +45,7 @@ B_MAX_SAMPLES_PER_BIN = 375
 B_BIN_COLOURS = [["#ff0000", "#f9a301"], ["#61f31d", "#16d5c1"], ["#7270e8", "#e87070"], ["#f75919", "#f2fa00"]]
 B_RADII_OFFSET = 0
 B_SPASRSIFY_METHOD = "random"
-B_THICK = True if ID == RunID.THICK_BORDER else False
+B_THICK = True if ID in [RunID.THICK_BORDER, RunID.THICK_BORDER_AND_CENTER] else False
 
 C_NUM_BINS = 10
 C_MAX_SAMPLES_PER_BIN = 31
@@ -97,7 +99,7 @@ def plot_boarder(data, n_bins, bin_colours, subplot_radius=0.55):
 #######################################################################################################################
 
 def plot_center_piece(data):
-    np.random.seed(SEED)    # comment out for to reproduce canvas print 
+    np.random.seed(SEED)    # comment out to reproduce canvas print
     processed_data = apply_preprocessing(data, C_MAX_SAMPLES_PER_BIN, C_NUM_BINS, sparsify_method=C_SPASRSIFY_METHOD)
     fft_y = fft(processed_data, axis=-1)
     fft_y = normalize_complex_coords(fft_y)
@@ -123,10 +125,10 @@ def plot_center_piece(data):
 if __name__ == '__main__':
     _, original_audio = read(AUDIO_FILEPATH)
 
-    if ID in [RunID.BORDER, RunID.THICK_BORDER, RunID.BORDER_AND_CENTER]:
+    if "border" in ID.value.lower():
         fft_audio = preprocess_border_audio(original_audio, B_NUM_BINS, B_MAX_SAMPLES_PER_BIN)
         plot_boarder(fft_audio, B_NUM_BINS, B_BIN_COLOURS, subplot_radius=0.55)
-    if ID in [RunID.CENTER, RunID.BORDER_AND_CENTER]:
+    if "center" in ID.value.lower():
         plot_center_piece(original_audio)
 
     if SAVE:
