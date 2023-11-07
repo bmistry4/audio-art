@@ -4,15 +4,9 @@
 - To convert ogg to wav format requires using pydub
 - To use pydub requires installing ffmpeg (follow https://www.wikihow.com/Install-FFmpeg-on-Windows)
 
-# TODO
-- https://medium.com/@reegan_anne/fully-customizable-qr-codes-in-python-7eb8a7c3b0da 
-- create private github with audio file and give access to fam. 
-- Create qr code which is linked to file 
-- add qr code to iamge
-- https://www.photobox.co.uk/
----
+#
 # Blog
-# Static Audio Art
+# Audio Art
 Turning a spoken memory into art.
 
 - **What?** Turn an audio clip into a piece of static art.
@@ -365,7 +359,7 @@ The final product looks like this!
 
 ![final-polar-floral-center-round_dpi-600.png](images%2Fpolar-floral-full%2Ffinal-polar-floral-center-round_dpi-600.png)
 
-### Border: Capturing minutes
+### Capturing minutes: Floral Border
 The image above looks like a neat piece containing data from the full length clip. But I feel something a bit more 
 fine-grained, like having a image representing ever minute-or-so would be a nice touch. 
 Let's make a circular border which has small flower-like images, where each flower represents a minute of data. 
@@ -403,11 +397,76 @@ The final result:
 
 ![final-polar-floral-segments-circle_dpi-600.png](images%2Fpolar-floral-segments-circle%2Ffinal-polar-floral-segments-circle_dpi-600.png)
 
-# The Final Piece: Canvas Art
-Now let's combine the floral boarder to the centerpiece!
+# Combining components - Floral Border and Center 
+We can also combine the last two types of art pieces together for a centerpiece with a border like below: 
+
+![final-polar-floral-borderAndCenter_dpi-600.png](images%2Fpolar-floral-border-and-center%2Ffinal-polar-floral-borderAndCenter_dpi-600.png)
 
 
+# QR code - Scannable Art! 
+Now for the cherry on top! 
+Since the art was created from an audio sample let's add a QR code component which we can scan to get us to the audio 
+clip!  
 
+ <span style="color: red;">NOTE: Since the art pieces I've shown you have been created using a private audio clip, 
+I'll instead set the QR link to my personal website.</span>
+
+Conveniently, there already exists a QR code generator library called `qrcode` (https://github.com/lincolnloop/python-qrcode)! 
+There's some neat features which we'll use from it including: 
+- having a link to some website/link/text (your choice!)
+- having a center image
+- having a background image underneath the qr code
+- having different qr code styles (module drawers)
+- having a thick border
+(Here's a nice article which explains some more details on using qrcode: https://medium.com/@reegan_anne/fully-customizable-qr-codes-in-python-7eb8a7c3b0da)
+
+Just generating the QR code to the link will look like this: 
+
+![qrcode_bkgNone_logoNone_dpi-600_VerticalBarsDrawer.png](images%2Fqrcode%2Fblog%2Fsave%2Fqrcode_bkgNone_logoNone_dpi-600_VerticalBarsDrawer.png)
+
+
+Now, let's take floral center and border art piece from earlier add it to the center: 
+
+![qrcode_bkgNone_logoFloralBorderAndCenter_dpi-600_VerticalBarsDrawer.png](images%2Fqrcode%2Fblog%2Fsave%2Fqrcode_bkgNone_logoFloralBorderAndCenter_dpi-600_VerticalBarsDrawer.png)
+
+Ok, looks a bit bland...let's fix that! 
+What if we used it as the background image instead of having it in the center? 
+
+![qrcode_bkgFloralBorderAndCenter_logoNone_dpi-600_VerticalBarsDrawer.png](images%2Fqrcode%2Fblog%2Fsave%2Fqrcode_bkgFloralBorderAndCenter_logoNone_dpi-600_VerticalBarsDrawer.png)
+
+It makes it difficult to see the centerpiece, but the border doesn't look too shabby. Let's just use the border as the background instead: 
+
+![qrcode_bkgFloralBorder_logoNone_dpi-600_VerticalBarsDrawer.png](images%2Fqrcode%2Fblog%2Fsave%2Fqrcode_bkgFloralBorder_logoNone_dpi-600_VerticalBarsDrawer.png)
+
+You can't see much of the border, so let's use a "thicker" border which had a smaller radius: 
+
+![qrcode_bkgFloralThickBorder_logoNone_dpi-600_VerticalBarsDrawer.png](images%2Fqrcode%2Fblog%2Fsave%2Fqrcode_bkgFloralThickBorder_logoNone_dpi-600_VerticalBarsDrawer.png)
+
+Better! Now let's add back in a center image but use a version which does not have a floral border: 
+
+![qrcode_bkgFloralThickBorder_logoFloralCenter_dpi-600_VerticalBarsDrawer.png](images%2Fqrcode%2Fblog%2Fsave%2Fqrcode_bkgFloralThickBorder_logoFloralCenter_dpi-600_VerticalBarsDrawer.png)
+
+Or instead, let's use a different center image... maybe one of the funky frequency waves? 
+
+![qrcode_bkgThickFloralBorder_logoWaves_dpi-600_VerticalBarsDrawer.png](images%2Fqrcode%2Fblog%2Fsave%2Fqrcode_bkgThickFloralBorder_logoWaves_dpi-600_VerticalBarsDrawer.png)
+
+And voilà! A lovely piece of art which can be scanned! 
+The qrcode library also gives you options to play around with the qrcode style by modifying the `module_drawer` argument
+for the `makr_image` method. Options include: `RoundedModuleDrawer`, `CircleModuleDrawer`, `VerticalBarsDrawer`, 
+`SquareModuleDrawer`, `HorizontalBarsDrawer`, and `GappedSquareModuleDrawer`. 
+The qrcodes you've been seeing have been using the `VerticalBarsDrawer`. 
+Using the others will result in the following: 
+
+![qrcode_bkgThickFloralBorder_logoWaves_dpi-600-ModuleDrawers.png](images%2Fqrcode%2Fblog%2Fsave%2Fmodule_drawer%2Fqrcode_bkgThickFloralBorder_logoWaves_dpi-600-ModuleDrawers.png)
+
+You may have noticed the thick black borders around the QR codes. 
+I needed this because I ended up printing this qrcode onto a canvas. I wanted the canvas to have wrapped edges 
+so need this thick border to avoid the qrcode being wrapped around the edges when printed. 
+For those interested, I used https://www.photobox.co.uk/ to print and deliver my canvas. Specifically I created a 
+square 30x30cm canvas print with the wrap (edges) option (https://www.photobox.co.uk/shop/canvas-prints/simple-canvas). 
+
+The printed canvas looked pretty great and the scan worked perfectly! 
+Here's it is ( <span style="color: red;">NOTE: I added markings on the code to stop the scan from working since it's for private use only)</span>: 
 
 
 _Just in time for Christmas 2023! :D_
