@@ -15,7 +15,13 @@ id_to_filenames = {
     2: ['2-radii-offset-0', '2-radii-offset-1'],
     3: ['3-binsNum-1', '3-binsNum-2', '3-binsNum-5', '3-binsNum-10', '3-binsNum-15', '3-binsNum-20'],
     4: ['4-binsSize-50', '4-binsSize-100', '4-binsSize-200', '4-binsSize-300', '4-binsSize-400', '4-binsSize-500'],
-    5: ['5-colours-0', '5-colours-1', '5-colours-2', '5-colours-3']
+    5: ['5-colours-0', '5-colours-1', '5-colours-2', '5-colours-3'],
+    6: ['qrcode_bkgThickFloralBorder_logoWaves_dpi-600_CircleModuleDrawer',
+        'qrcode_bkgThickFloralBorder_logoWaves_dpi-600_GappedSquareModuleDrawer',
+        'qrcode_bkgThickFloralBorder_logoWaves_dpi-600_HorizontalBarsDrawer',
+        'qrcode_bkgThickFloralBorder_logoWaves_dpi-600_RoundedModuleDrawer',
+        'qrcode_bkgThickFloralBorder_logoWaves_dpi-600_SquareModuleDrawer',
+        'qrcode_bkgThickFloralBorder_logoWaves_dpi-600_VerticalBarsDrawer']
 }
 
 id_to_subplot_titles = {
@@ -23,7 +29,9 @@ id_to_subplot_titles = {
     2: ['radii-offset = 0', 'radii-offset = 1'],
     3: ['No. bins = 1', 'No. bins = 2', 'No. bins = 5', 'No. bins = 10', 'No. bins = 15', 'No. bins = 20'],
     4: ['Bin size = 50', 'Bin size = 100', 'Bin size = 200', 'Bin size = 300', 'Bin size = 400', 'Bin size = 500'],
-    5: ['', '', '', '']
+    5: ['', '', '', ''],
+    6: ['CircleModuleDrawer', 'GappedSquareModuleDrawer', 'HorizontalBarsDrawer', 'RoundedModuleDrawer',
+        'SquareModuleDrawer', 'VerticalBarsDrawer']
 }
 
 id_to_savename = {
@@ -32,6 +40,7 @@ id_to_savename = {
     3: "3-binsNum",
     4: "4-binSize",
     5: "5-colours",
+    6: "qrcode_bkgThickFloralBorder_logoWaves_dpi-600-ModuleDrawers"
 }
 
 id_to_grid_size = {
@@ -39,7 +48,9 @@ id_to_grid_size = {
     2: (1, 2),
     3: (2, 3),
     4: (2, 3),
-    5: (2, 2)
+    5: (2, 2),
+    6: (2, 3),
+
 }
 
 
