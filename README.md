@@ -3,7 +3,7 @@
 ---
 Audio Art is a project containing a collection of scripts which can convert audio to pieces of art. 
 
-**Want to know more?** Checkout my blog post!
+**Want to know more?** Checkout my [blog post](https://bmistry4.github.io/2023/11/06/audio-art.html)!
 
 Examples of the types of art works that can be generated are shown below. 
 Each image was generated using the same audio file!
@@ -38,7 +38,7 @@ Example:
 # Notes
 
 - Visualisations require wav format. 
-  - To convert ogg to wav format requires using pydub
+  - If you have an ogg file, to convert it to a wav format requires using pydub
     - To use pydub requires installing ffmpeg (follow https://www.wikihow.com/Install-FFmpeg-on-Windows)
     - For conversion use: [ogg2wav.py](src%2Futils%2Fogg2wav.py)
 --- 
